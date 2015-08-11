@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="http://www.livejs.com/live.js" type="text/javascript"></script>
+  <link rel="stylesheet" media="screen" 
+    href="http://openfontlibrary.org/face/8bit-wonder" type="text/css"/>
+  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=VT323" />
+  <title>Engineer Quest - Incremental Game</title>
+  <style>
+    body {
+      background-color: #222222;
+      background: repeating-linear-gradient(45deg,
+        #2b2b2b 0%,
+        #2b2b2b 10%,
+        #222222 0%,
+        #222222 50%) 0 / 15px 15px;
+    }
+
+    button.building {
+      height: 50px;
+      width: 200px;
+      color: white;
+      display: table;
+      margin: 0 auto;
+      margin-top: 10px;
+      background-color: orange;
+    }
+
+    button#clicker {
+      height: 200px;
+      width: 200px;
+      color: white;
+      display: table;
+      margin: 0 auto;
+      background-color: steelblue;
+    }
+
+    .game-title {
+      text-align: center;
+      margin: 20px 0 0 0;
+      padding: 0px;
+      font-size: 6vw;
+    }
+
+    .neon {
+      -webkit-animation: neon 5s ease-in-out infinite alternate;
+      animation: neon 5s ease-in-out infinite alternate;
+    }
+
+    @-webkit-keyframes neon {
+      from {
+        text-shadow: 
+          0 0 5px #fff,
+          0 0 8px #228DFF,
+      }
+      to {
+        text-shadow:
+          0 0 5px #fff,
+          0 0 10px #228DEF,
+          0 0 12px #228DEF;
+      }
+    }
+
+    .pixeltext {
+      font-family: 'VT323', sans-serif;
+      color: #228DFF;
+      text-shadow: 1px -0.5px 0 black;
+    }
+
+    div.terminal {
+      background-color: #031E11;
+      color: #14FDCE;
+      font-family: 'VT323';
+      -webkit-font-smoothing: none;
+      line-height: 1;
+      text-shadow: 0 1px 1px #0c7b46;
+      -webkit-animation: crt-output 10ms infinite;
+      animation: crt-output 10ms infinite;
+      border: 3px solid black;
+      border-radius: 10px;
+      z-index: -1;
+    }
+
+    @-webkit-keyframes crt-output {
+      0% {
+        opacity: 0.9;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+
+    @keyframes crt-output {
+      0% {
+        opacity: 0.9;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+
+    .terminal-glow {
+      -webkit-animation: crt-glow 60s ease-in-out infinite alternate;
+      animation: crt-glow 60s ease-in-out infinite alternate;
+      background: -webkit-radial-gradient(center, circle,
+        #1BD459 0%,
+        rgba(27, 212, 89, 0.88) 58%,
+        rgba(21, 235, 92, 0.57) 80%,
+        rgba(19, 93, 29, 0.27) 93%,
+        rgba(10, 23, 12, 0) 100%);
+      background: radial-gradient(circle at center,
+        #1BD459 0%,
+        rgba(27, 212, 89, 0.88) 58%,
+        rgba(21, 235, 92, 0.57) 80%,
+        rgba(19, 93, 29 0.27) 93%,
+        rgba(10, 23, 12, 0) 100%);
+      opacity: 0.15;
+      width: 100%;
+      height: 100%;
+      left: 0;
+      top: 0;
+      position: absolute;
+    }
+
+    @-webkit-keyframes crt-glow {
+      0% {
+        opacity: 0.1;
+      }
+
+      50% {
+        opacity: 0.2;
+      }
+    }
+
+    @keyframes crt-glow {
+      0% {
+        opacity: 0.1;
+      }
+
+      50% {
+        opacity: 0.2;
+      }
+    }
+
+    .scanlines {
+      background: 
+        -webkit-linear-gradient(top,
+        rgba(255, 255, 255, 0),
+        rgba(255, 255, 255, 0) 50%,
+        rgba(255, 255, 255, 0.1) 70%,
+        rgba(255, 255, 255, 0.3));
+      background:
+        linear-gradient(to bottom,
+        rgba(255, 255, 255, 0),
+        rgba(255, 255, 255, 0) 50%,
+        rgba(255, 255, 255, 0.1) 70%,
+        rgba(255, 255, 255, 0.3));
+      background-size: 100% 2px;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    hr.term-divider {
+      width: 110%;
+      margin: -5px auto;
+      margin-left: -5%;
+      color: steelblue;
+      background-color: steelblue;
+      height: 2px;
+      border: 0 none;
+    }
+
+    div.term-banner {
+      background-color: steelblue;
+      color: black;
+      bottom: 0px;
+      width: 99.5%;
+      height: 20px;
+      position: absolute;
+      left: 0.5px;
+      border: 1px solid steelblue;
+      border-radius: 5px;
+      z-index: -1;
+      text-align: right;
+    }
+
+    div#resources-area {
+      position: absolute;
+      width: 30%;
+      height: 70%;
+      top: 15%;
+      left: 20px;
+      box-shadow: -1px 1px 2px black;
+    }
+
+    div#action-area {
+      position: absolute;
+      background-color: #383838;
+      left: 35%;
+      right: 35%;
+      top: 15%;
+      border: 2px solid black;
+      border-radius: 10px;
+      box-shadow: -1px 1px 2px black;
+      padding-bottom: 5px;
+    }
+
+    div#upgrade-area {
+      background-color: #383838;
+      position: absolute;
+      width: 30%;
+      top: 15%;
+      right: 20px;
+      height:70%;
+      border: 2px solid black;
+      border-radius: 10px;
+      box-shadow: -1px 1px 2px black;
+    }
+
+    div#job-area {
+      background-color: #383838;
+      position:absolute;
+      left: 50px;
+      top: 40px;
+      border: 2px solid black;
+      border-radius: 10px;
+      box-shadow: -1px 1px 2px black;
+      width: 25%;
+      overflow: hidden;
+      padding-left: 20px;
+    }
+
+    div#job-area h4 {
+      color: steelblue;
+      font-family: 'VT323', monospace;
+      text-shadow: 1px -1px 0.5px black;
+      margin: 4px;
+    }
+
+    div#event-ticker-area {
+      background-color: #383838;
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 40px;
+      box-shadow: -1px 1px 2px black;
+    }
+
+    .area-text {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+
+    button.action {
+      height: 70px;
+      width: 90%;
+      border: 1.5px solid orange;
+      border-radius: 10px;
+      background: linear-gradient(to right, 
+        rgba(255, 165, 0, 0.2) 50%,
+        rgba(255, 165, 0, 0) 50%);
+      background-size: 200% 100%;
+      background-position: left bottom;
+      left: 10px;
+      right: 10px;
+      margin-left: 5%;
+      margin-right: 5%;
+      margin-top: 15px;
+      margin-bottom: 10px;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    button.action-active {
+      background-position: right bottom;
+      transition: background-position 10s linear;
+    }
+
+    button.glow {
+      box-shadow: 0 0 10px orange;
+    }
+
+    p.action {
+      font-family: 'VT323', monospace;
+      font-size: 28px;
+      text-align: center;
+      position: relative;
+      margin-top: 5%;
+      color: orange;
+      text-shadow: -0.5px 0.5px 0.5px black;
+    }
+
+    .unselectable {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    .pause {
+      -webkit-animation-play-state: paused;
+      animation-play-state: paused;
+    }
+
+    .footer {
+      font-family: Helvetica;
+      text-align: center;
+      width: 98%;
+      position: absolute;
+      bottom: 0;
+      padding-top: 50px;
+      padding-bottom: 10px;
+    }
+
+    .horizontal { display: inline-block; }
+  </style>
+</head>
+<body class="unselectable">
+  <h1 class="game-title pixeltext neon">Engineer Quest</h1>
+  
+  <div id="resources-area" class="terminal">
+    <div class="terminal-glow"></div>
+    <div class="scanlines"></div>
+    <div class="area-text pixeltext">
+      <h1>% more bills.log</h1>
+      <h2 id="bills-display">Rent: $100 &emsp;&emsp; 01:00</h2>
+      <hr class="term-divider"/>
+      <h1>% more resources.log</h1>
+      <h2 id="funds-counter" class="pixeltext">Funds $100</h2>
+      <h3 id="fame-counter">Fame</h3>
+      <hr class="term-divider"/>
+      <h1>% more skills.log</h1>
+      <div class="term-banner">v0.0.1-alpha "hobbes" 21:18 08-Aug-15</div>
+    </div>
+  </div>
+
+  <div id="job-area">
+    <h4 id="job-title">Current Job: Burger Baron Grunt</h4>
+    <h4 id="job-pay">Pay: $2/s</h4>
+    <h4 id="education">Education: High School Diploma</h4>
+  </div>
+
+  <div id="action-area">
+    <button class="action" id="work">
+      <p class="action neon">Work</p>
+    </button>
+      <br/>
+    <button class="action" id="ecommerce-site">
+      <p class="action">Build eCommerce Site</p>
+    </button>
+  </div>
+  
+  <div id="upgrade-area">
+    <button class="action" id="tinker">
+      <p class="action">Tinker</p>
+    </button>
+  </div>
+  
+  <div id="event-ticker-area" class="terminal" style="background-color:#031E11;">
+    <div class="scanlines"></div>
+    <div class="terminal-glow"></div>
+    <div class="area-text">
+      <p>Event Ticker</p>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <small>(c) 2015 Small Cat Software</small>
+  </div>
+  
+  <script src="game.js" type="text/javascript"></script>
+</body>
+</html>
